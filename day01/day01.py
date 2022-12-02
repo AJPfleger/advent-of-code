@@ -8,9 +8,7 @@ Created on Thu Dec  1 07:56:39 2022
 https://adventofcode.com/2022/day/1
 """
 
-import numpy as np
-
-file = open('day1input.txt', 'r')
+file = open('day01input.txt', 'r')
 Lines = file.readlines()
 
 calPerElf = [0]
@@ -31,4 +29,3 @@ for i in range(topCals):
     calSum += calPerElf[i]
 
 print(f'The {topCals} elves with the most calories carry together {calSum} calories.')
-
