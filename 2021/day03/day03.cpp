@@ -1,7 +1,6 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
-#include <math.h>
 
 
 int binaryLength(const std::string filename) {

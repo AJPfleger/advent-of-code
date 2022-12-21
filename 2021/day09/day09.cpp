@@ -1,8 +1,6 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
-#include <algorithm>
-#include <numeric>
 #include <map>
 
 std::vector<std::vector<int>> getField(const std::string filename) {
@@ -50,19 +48,19 @@ bool checkPosition(const std::vector<std::vector<int>> &field, const int x, cons
 }
 
 bool checkNeighbours(const std::vector<int> &xy,
-		     const std::map<std::vector<int>, std::string> &bassin) {
+		     const std::map<std::vector<int>, std::string> &basin) {
 
   const int x = xy[0];
   const int y = xy[1];
   bool foundNeighbour = false;
 
-  if (bassin.find({x-1,y}) != bassin.end()) {
+  if (basin.find({x-1,y}) != basin.end()) {
     foundNeighbour =  true;
-  } else if (bassin.find({x+1,y}) != bassin.end()) {
+  } else if (basin.find({x+1,y}) != basin.end()) {
     foundNeighbour =  true;
-  } else if (bassin.find({x,y-1}) != bassin.end()) {
+  } else if (basin.find({x,y-1}) != basin.end()) {
     foundNeighbour =  true;
-  } else if (bassin.find({x,y+1}) != bassin.end()) {
+  } else if (basin.find({x,y+1}) != basin.end()) {
     foundNeighbour =  true;
   }
 
@@ -70,30 +68,30 @@ bool checkNeighbours(const std::vector<int> &xy,
 }	
 
 
-int getBassinSize(std::map<std::vector<int>, std::string> &uncovered,
+int getBasinSize(std::map<std::vector<int>, std::string> &uncovered,
 		  std::map<std::vector<int>, std::string> &covered,
 		  const std::vector<int> &s) {
 
   bool foundNew = true;
-  std::map<std::vector<int>, std::string> bassin;
-  bassin[s] = "";
+  std::map<std::vector<int>, std::string> basin;
+  basin[s] = "";
 
   while (foundNew) {
     foundNew = false;
     for(auto & XY : uncovered) {
       const std::vector<int> xy = XY.first;
-      const bool connected = checkNeighbours(xy,bassin);
+      const bool connected = checkNeighbours(xy,basin);
       if (connected){
         foundNew = true;
 	covered[xy] = "";
-	bassin[xy] = "";
+	basin[xy] = "";
 	uncovered.erase(xy);
 	break;
       }
     }
   }
 
-  return bassin.size();
+  return basin.size();
 }
 
 
@@ -135,17 +133,17 @@ int main() {
       }
     }
   
-    std::vector<int> bassinSizes;
+    std::vector<int> basinSizes;
     for(auto & s : sinks) {
-      const int bSize = getBassinSize(uncovered,covered,s.first);
-      bassinSizes.push_back(bSize);
+      const int bSize = getBasinSize(uncovered,covered,s.first);
+      basinSizes.push_back(bSize);
     }
   
-    sort(bassinSizes.begin(),bassinSizes.end(), std::greater<int>());
+    sort(basinSizes.begin(),basinSizes.end(), std::greater<int>());
   
     int res = 1;
     for(int i=0; i<3; i++) {
-      res *= bassinSizes[i];
+      res *= basinSizes[i];
     }
   
     std::cout << "Part 2: result = " << res << std::endl;

@@ -17,7 +17,7 @@ int main() {
     }
 
     std::cout << "*** Part 1 ***\n";
-    std::cout << result << " measurements are larger than the previous measurment." << std::endl;
+    std::cout << result << " measurements are larger than the previous measurement." << std::endl;
   }
 
   {

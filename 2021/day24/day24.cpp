@@ -1,18 +1,18 @@
 // WIP - It compiles and gives a solution, but still needs some clean-up
 //
-// I am not too happy with the solution, since many things are hardcoded and it takes still a long time
+// I am not too happy with the solution, since many things are hardcoded, and it takes still a long time
 // to compute the second part of the problem.
 //
 // This is my approach to the problem:
 //
-// 1. realALU is a general implementation and takes all commands from the input file
+// 1. realALU is a general implementation and takes all commands from the input file,
 // but it is really slow
 //
 // 2.a simulatedALU is a manual translation of the commands in input.txt - still too slow
 // 2.b simulatedALU2 has a hardcoded formula for z5 and starts from there
 //
 // 3. integratedALU combines the commands from the file with the search algorithm
-// it manages to find the first solution in a few minutes and the second one in a few hours.
+// it manages to find the first solution in less than a minute and the second one in a few hours.
 // I think it does not look very nice with the unrolled loops. Maybe, in the future
 // I will come up with at a different method.
 // To speed it up, it would be possible to use MP to start at different positions
@@ -20,8 +20,6 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
-#include <algorithm>
-#include <numeric>
 
 //// realALU reads the instructions from the input file and uses them to modify the input
 //bool realALU(const std::string &modelS, const std::vector<std::string> &input) {
@@ -279,7 +277,7 @@ int main() {
   //  while( (lookingForModel)  & (count < 1e7)) {
   //    std::string modelS = std::to_string(model);
   //    if (!(modelS.find('0') != std::string::npos)) {
-  //      lookingForModel = simualtedALU2(modelS, a, b, c);
+  //      lookingForModel = simulatedALU2(modelS, a, b, c);
   //    }
   //    --model;
   //
