@@ -1,32 +1,45 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
+--- Day 6: Tuning Trouble ---
+https://adventofcode.com/2022/day/6
+
 Created on Tue Dec  6 07:29:37 2022
 
 @author: AJPfleger
-
-https://adventofcode.com/2022/day/5
+https://github.com/AJPfleger
 """
 
-def findMarker(sequence, markerLength):
-    
-    marker = [sequence[0]]*markerLength
-    
+from pathlib import Path
+
+
+def get_sequence(filename):
+    path = Path(__file__).with_name(filename)
+    file = path.open("r")
+    lines = file.readlines()
+
+    return lines[0].strip()
+
+
+def find_marker(sequence, marker_length):
+    marker = [sequence[0]] * marker_length
+
     for s in range(len(sequence)):
-        marker[s%markerLength] = sequence[s]
-        
-        if len(set(marker)) == markerLength:
-            print(f'marker at {s+1}')
-            return
+        marker[s % marker_length] = sequence[s]
+
+        if len(set(marker)) == marker_length:
+            return s + 1
 
 
-file = open('input.txt', 'r')
-Lines = file.readlines()
+print("\n--- Day 6: Tuning Trouble ---")
 
-sequence = Lines[0][0:-1]
+filename = "input.txt"
+sequence = get_sequence(filename)
 
-print('*** Part 1 ***')
-findMarker(sequence, 4)
+print("\n--- Part 1 ---")
+chars = find_marker(sequence, 4)
+print(f"Characters to process = {chars}")
 
-print('*** Part 2 ***')
-findMarker(sequence, 14)
+print("\n--- Part 2 ---")
+chars = find_marker(sequence, 14)
+print(f"Characters to process = {chars}\n")

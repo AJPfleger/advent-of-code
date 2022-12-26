@@ -1,136 +1,133 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
+""""
+--- Day 8: Treetop Tree House ---
+https://adventofcode.com/2022/day/8
+
+Created on Thu Dec  8 07:05:00 2022
 
 @author: AJPfleger
-
-https://adventofcode.com/2022/day/8
+https://github.com/AJPfleger
 """
 
+from pathlib import Path
 
-def generateForest(Lines):
-    nRows = len(Lines)
-    nCols = len(Lines[0])-1 # -1 to account for ending \n
-    
-    forest = [ [ [] for _ in range(nRows) ] for _ in range(nCols) ]
-    
-    for r in range(nRows):
-        for c in range(nCols):
-            forest[r][c] = int(Lines[r][c])
-    
+
+def generate_forest(filename):
+    path = Path(__file__).with_name(filename)
+    file = path.open("r")
+    lines = file.readlines()
+
+    forest = []
+    for l in lines:
+        row = [int(i) for i in l.strip()]
+        forest.append(row)
+
     return forest
 
-def unblockedView(forest,r,c):
-    nRows = len(forest)
-    nCols = len(forest[0])
+
+def get_visible(forest):
+    n_rows = len(forest)
+    n_cols = len(forest[0])
+
+    visible = 0
+    for r in range(n_rows):
+        for c in range(n_cols):
+            if is_visible(forest, r, c):
+                visible += 1
+
+    return visible
+
+
+def is_visible(forest, r, c):
+    row = forest[r]
+    col = [ri[c] for ri in forest]
+
+    row_left = row[:c + 1]
+    row_right = row[c:]
+    row_right.reverse()
+    col_top = col[:r + 1]
+    col_bottom = col[r:]
+    col_bottom.reverse()
+
+    directions = [row_left, row_right, col_top, col_bottom]
+
+    visible = False
+    for d in directions:
+        if d.index(max(d)) == len(d) - 1:
+            visible = True
+            break
+
+    return visible
+
+
+def get_max_score(forest):
+    n_rows = len(forest)
+    n_cols = len(forest[0])
+
+    max_score = 0
+    for r in range(n_rows):
+        for c in range(n_cols):
+            views = unblocked_view(forest, r, c)
+            score = get_score(views)
+
+            if score > max_score:
+                max_score = score
+
+    return max_score
+
+
+def unblocked_view(forest, r, c):
+    n_rows = len(forest)
+    n_cols = len(forest[0])
     h = forest[r][c]
+
     views = []
-    
+    v = 0
+
     # top
-    for v in range(r-1,-1,-1):
+    for v in reversed(range(r)):
         if h <= forest[v][c]:
             break
-    views.append(abs(v-r))
-    
+    views.append(abs(v - r))
+
     # bottom
-    for v in range(r+1,nRows):
+    for v in range(r + 1, n_rows):
         if h <= forest[v][c]:
             break
-    views.append(abs(v-r))
-    
+    views.append(abs(v - r))
+
     # left
-    for v in range(c-1,-1,-1):
+    for v in reversed(range(c)):
         if h <= forest[r][v]:
             break
-    views.append(abs(v-c))
-    
+    views.append(abs(v - c))
+
     # right
-    for v in range(c+1,nCols):
+    for v in range(c + 1, n_cols):
         if h <= forest[r][v]:
             break
-    views.append(abs(v-c))
-    
+    views.append(abs(v - c))
+
     return views
 
-def getScore(views):
+
+def get_score(views):
     s = 1
     for v in views:
         s *= v
     return s
-    
-def isVisible(forest,r,c):
-    nRows = len(forest)
-    nCols = len(forest[0])
-    
-    h = forest[r][c]
-    
-    # top
-    for v in range(r-1,-1,-1):
-        if h <= forest[v][c]:
-            break
-    if v == 0 and h > forest[v][c]:
-        return True
-    
-    # bottom
-    for v in range(r+1,nRows):
-        if h <= forest[v][c]:
-            break
-    if v == nRows-1 and h > forest[v][c]:
-        return True
-    
-    # left
-    for v in range(c-1,-1,-1):
-        if h <= forest[r][v]:
-            break
-    if v == 0 and h > forest[r][v]:
-        return True
-    
-    # right
-    for v4 in range(c+1,nCols):
-        if h <= forest[r][v4]:
-            break
-    if v4 == nCols-1 and h > forest[r][v4]:
-        return True
-    
-    return False
 
 
-file = open('input.txt', 'r')
-Lines = file.readlines()
+print("\n--- Day 8: Treetop Tree House ---")
 
-forest = generateForest(Lines)
+filename = "input.txt"
+forest = generate_forest(filename)
 
-nRows = len(forest)
-nCols = len(forest[0])
+print("\n--- Part 1 ---")
+visible = get_visible(forest)
+print(f"Number of visible trees = {visible}")
 
-
-print('\n*** Part 1 ***')
-
-visible = 0
-
-# from the outside
-visible += 2*nRows + 2*nCols - 4
-
-# make map of visible trees? needs numpy I think
-for r in range(1,nRows-1):
-    for c in range(1,nCols-1):
-        if isVisible(forest,r,c):
-            visible += 1
-
-print(f'Number of visible trees = {visible}')
-
-
-print('\n*** Part 2 ***')
-    
-# assuming, that border trees are not the best
-maxScore = 0
-for r in range(1,nRows-1):
-    for c in range(1,nCols-1):
-        
-        views = unblockedView(forest,r,c)
-        score = getScore(views)
-        
-        if score > maxScore:
-            maxScore = score
-
-print(f'Max Score = {maxScore}')
+print("\n--- Part 2 ---")
+max_score = get_max_score(forest)
+print(f"Max Score = {max_score}\n")
