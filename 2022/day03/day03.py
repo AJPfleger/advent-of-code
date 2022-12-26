@@ -1,69 +1,80 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
+--- Day 3: Rucksack Reorganization ---
+https://adventofcode.com/2022/day/3
+
 Created on Sat Dec  3 08:06:00 2022
 
 @author: AJPfleger
-
-https://adventofcode.com/2022/day/2
+https://github.com/AJPfleger
 """
 
-def sanitizeLine(L):
-    return L[0:-1]
+from pathlib import Path
 
-def sanitizeLineGroup(LG):
-    
-    for l in range(len(LG)):
-        LG[l] = sanitizeLine(LG[l])
-    
-    return LG
 
-def matchLines(l1,l2):
-    l12 = ''
-    
+def parse_file(filename):
+    path = Path(__file__).with_name(filename)
+    file = path.open("r")
+    raw_lines = file.readlines()
+
+    lines = []
+    for rl in raw_lines:
+        lines.append(rl.strip())
+
+    return lines
+
+
+def match_lines(l1, l2):
+    l12 = ""
     for i1 in l1:
-        for i2 in l2:
-            if i1 == i2:
-                l12 += i1
-    
+        if i1 in l2:
+            l12 += i1
+
     return l12
 
-def priorityOfLine(L):
-    halfLength = int(len(L)/2)
-    item = matchLines(L[:halfLength], L[halfLength:])
-    
-    return convertItemToPriority(item[0])
-    
-def priorityOfGroup(LG):
-    
-    lHelp = LG[0]
-    for l in range(1,len(LG)):
-        lHelp = matchLines(lHelp,LG[l])
 
-    return convertItemToPriority(lHelp[0])
+def priority_of_group(line_group):
+    l_help = line_group[0]
+    for l in line_group[1:]:
+        l_help = match_lines(l_help, l)
 
-def convertItemToPriority(item):
-    priority = ord(item)-96
-    
+    return item_to_priority(l_help[0])
+
+
+def item_to_priority(item):
+    priority = ord(item[0]) - 96
+
     if priority < 1:
         priority += 58
-    
+
     return priority
 
 
-file = open('input.txt', 'r')
-Lines = file.readlines()
+def get_priorities(lines, group_size=1):
+    sum_of_priorities = 0
+    for i in range(0, len(lines), group_size):
+        if group_size == 1:
+            l = lines[i]
+            half_length = int(len(l) / 2)
+            line_group = [l[:half_length], l[half_length:]]
+        else:
+            line_group = lines[i: i + group_size]
 
-sumOfPriorities = 0 
-for i in range(len(Lines)):
-    line = sanitizeLine(Lines[i])
-    sumOfPriorities += priorityOfLine(line)
-    
-print(f'Part1 - Sum of priorities = {sumOfPriorities}')
+        sum_of_priorities += priority_of_group(line_group)
 
-sumOfPriorities = 0 
-for i in range(0,len(Lines),3):
-    lineGroup = sanitizeLineGroup(Lines[i:i+3])
-    sumOfPriorities += priorityOfGroup(lineGroup)
-    
-print(f'Part2 - Sum of priorities = {sumOfPriorities}')
+    return sum_of_priorities
+
+
+print("\n--- Day 3: Rucksack Reorganization ---")
+
+filename = "input.txt"
+lines = parse_file(filename)
+
+print("\n--- Part 1 ---")
+sum_of_priorities = get_priorities(lines, 1)
+print(f"Sum of priorities = {sum_of_priorities}")
+
+print("\n--- Part 2 ---")
+sum_of_priorities = get_priorities(lines, 3)
+print(f"Sum of priorities = {sum_of_priorities}\n")

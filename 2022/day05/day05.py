@@ -1,79 +1,84 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
+--- Day 5: Supply Stacks ---
+https://adventofcode.com/2022/day/5
+
 Created on Mon Dec  5 07:21:35 2022
 
 @author: AJPfleger
-
-https://adventofcode.com/2022/day/5
+https://github.com/AJPfleger
 """
 
-def findSeparationIndex(Lines):
-    for l in range(len(Lines)):
-        if Lines[l] == '\n':
-            return l
+from pathlib import Path
+import re
 
-def generateStorage(Lines):
-    sep = findSeparationIndex(Lines)
-    maxStacks = int(Lines[sep-1][-3])
-    storage = [ [] for _ in range(maxStacks) ]
 
-    for h in range(sep-2,-1,-1):
-        for s in range(maxStacks):
-            crate = Lines[h][s*4+1]
-            if crate != ' ':
+def generate_storage(lines):
+    sep = lines.index("\n")
+    max_stacks = int(lines[sep - 1][-3])
+    storage = [[] for _ in range(max_stacks)]
+
+    for h in reversed(range(sep - 1)):
+        for s in range(max_stacks):
+            crate = lines[h][s * 4 + 1]
+            if crate != " ":
                 (storage[s]).append(crate)
 
     return storage
 
-def moveCrates(storage, instructions, crane = "9000"):
-    [N,start,end] = instructions
+
+def move_crates(storage, instructions, crane="9000"):
+    [n_max, start, end] = instructions
     order = -1
-    for n in range(N):
+    for n in range(n_max):
         if crane == "9001":
-            order = -N+n
-        storage[end-1].append(storage[start-1].pop(order))
+            order = n - n_max
+        storage[end - 1].append(storage[start - 1].pop(order))
 
     return storage
 
-def simulateInstructions(storage, Lines, crane = "9000"):
-    sep = findSeparationIndex(Lines)
 
-    for i in range(sep+1,len(Lines)):
-        instructions = parseMove(Lines[i])
-        storage = moveCrates(storage, instructions, crane)
+def simulate_instructions(storage, lines, crane="9000"):
+    sep = lines.index("\n")
+
+    for i in range(sep + 1, len(lines)):
+        instructions = parse_move(lines[i])
+        storage = move_crates(storage, instructions, crane)
 
     return storage
 
-def parseMove(line):
-    instructions = []
-    s = ''
-    for l in range(len(line)):
-        if line[l].isnumeric():
-            s += line[l]
-        elif s.isnumeric():
-            instructions.append(int(s))
-            s = ''
 
-    return instructions # [N,start,end]
+def parse_move(line):
+    match = re.match("move (\d+) from (\d+) to (\d+)", line.strip())
+    n_max, start, end = match.groups()
 
-def printMessage(storage):
-    message = ''
-    for s in range(len(storage)):
-        message += storage[s][-1]
-    print(f'Message = {message}')
-    return
+    return int(n_max), int(start), int(end)
 
 
-file = open('input.txt', 'r')
-Lines = file.readlines()
+def get_message(storage):
+    message = ""
+    for s in storage:
+        message += s[-1]
 
-print('*** Part 1 ***')
-storage = generateStorage(Lines)
-simulateInstructions(storage, Lines, "9000")
-printMessage(storage)
+    return message
 
-print('\n*** Part 2 ***')
-storage = generateStorage(Lines)
-simulateInstructions(storage, Lines, "9001")
-printMessage(storage)
+
+print("\n--- Day 5: Supply Stacks ---")
+
+filename = "input.txt"
+path = Path(__file__).with_name(filename)
+file = path.open("r")
+lines = file.readlines()
+
+print("\n--- Part 1 ---")
+storage = generate_storage(lines)
+storage = simulate_instructions(storage, lines, "9000")
+message = get_message(storage)
+print(f"Message = {message}")
+
+print("\n--- Part 2 ---")
+storage = generate_storage(lines)
+storage = simulate_instructions(storage, lines, "9001")
+message = get_message(storage)
+print(f"Message = {message}\n")

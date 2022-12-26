@@ -1,31 +1,47 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
+--- Day 1: Calorie Counting ---
+https://adventofcode.com/2022/day/1
+
 Created on Thu Dec  1 07:56:39 2022
 
 @author: AJPfleger
-
-https://adventofcode.com/2022/day/1
+https://github.com/AJPfleger
 """
 
-file = open('day01input.txt', 'r')
-Lines = file.readlines()
+from pathlib import Path
 
-calPerElf = [0]
-elfCounter = 0
-for i in range(len(Lines)):
-    if Lines[i] != '\n':
-        calItem = int(Lines[i])
-        calPerElf[-1] += calItem
-    else:
-        calPerElf.append(0)
 
-calPerElf.sort(reverse=True)
-print(f'Elf with the most calories carries {calPerElf[0]} calories.')
+def get_cal_per_elf(filename):
+    path = Path(__file__).with_name(filename)
+    file = path.open("r")
+    lines = file.readlines()
 
-topCals = 3
-calSum = 0
-for i in range(topCals):
-    calSum += calPerElf[i]
+    cal_per_elf = [0]
+    for l in lines:
+        if l != "\n":
+            cal_per_elf[-1] += int(l)
+        else:
+            cal_per_elf.append(0)
 
-print(f'The {topCals} elves with the most calories carry together {calSum} calories.')
+    return cal_per_elf
+
+
+def get_top_cals(cal_per_elf, top_n=1):
+    cal_per_elf.sort(reverse=True)
+
+    return sum(cal_per_elf[:top_n])
+
+
+print("\n--- Day 1: Calorie Counting ---")
+
+filename = "input.txt"
+cal_per_elf = get_cal_per_elf(filename)
+
+print("\n--- Part 1 ---")
+print(f"Elf with the most calories carries {get_top_cals(cal_per_elf)} calories.")
+
+print("\n--- Part 2 ---")
+top_n = 3
+print(f"The {top_n} elves with the most calories carry together {get_top_cals(cal_per_elf,top_n)} calories.\n")

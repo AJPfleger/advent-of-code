@@ -1,42 +1,51 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
+--- Day 2: Rock Paper Scissors ---
+https://adventofcode.com/2022/day/2
+
 Created on Fri Dec  2 07:16:48 2022
 
 @author: AJPfleger
-
-https://adventofcode.com/2022/day/2
+https://github.com/AJPfleger
 """
 
-def RPS(p1,p2):
-    return (p2-p1+1)%3
+from pathlib import Path
 
-# returns what p2 needs to play to get to res
-def inverseRPS(p1,res):
-    return (p1+res-1)%3
 
-def pointsRound(p,res):
-    return p+1 + 3*res
+def play(lines, mode="normal"):
 
-file = open('day02input.txt', 'r')
-Lines = file.readlines()
+    total_score = 0
+    for i in range(len(lines)):
+        p1 = ord(lines[i][0]) - 65  # player1
+        if mode == "normal":
+            p2 = ord(lines[i][2]) - 88  # player2
+            res = (p2 - p1 + 1) % 3
+        elif mode == "inverse":
+            res = ord(lines[i][2]) - 88  # expected result 0/1/2
+            p2 = (p1 + res - 1) % 3
+        else:
+            p2 = 0
+            res = 0
+            print(f"ERROR play: unknow mode [{mode}]")
 
-totalScore = 0 
-for i in range(len(Lines)):
-    p1 = ord(Lines[i][0])-65 #player1
-    p2 = ord(Lines[i][2])-88 #player2
-    res = RPS(p1,p2)
-    
-    totalScore += pointsRound(p2,res)
-    
-print(f'Part1 - Expected Score = {totalScore}')
+        total_score += (p2 + 1) + 3 * res
 
-totalScore = 0
-for i in range(len(Lines)):
-    p1 = ord(Lines[i][0])-65 #player1
-    res = ord(Lines[i][2])-88 #expected result 0/1/2
-    p2 = inverseRPS(p1,res)
-    
-    totalScore += pointsRound(p2,res)
-    
-print(f'Part2 - Expected Score = {totalScore}')
+    return total_score
+
+
+print("\n--- Day 2: Rock Paper Scissors ---")
+
+filename = "input.txt"
+path = Path(__file__).with_name(filename)
+file = path.open("r")
+lines = file.readlines()
+
+
+print("\n--- Part 1 ---")
+total_score = play(lines, "normal")
+print(f"Expected Score = {total_score}")
+
+print("\n--- Part 2 ---")
+total_score = play(lines, "inverse")
+print(f"Expected Score (Inverse) = {total_score}\n")
