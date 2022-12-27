@@ -1,64 +1,80 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
+""""
+--- Day 10: Cathode-Ray Tube ---
+https://adventofcode.com/2022/day/10
+
 Created on Sat Dec 10 05:50:49 2022
 
 @author: AJPfleger
-
-https://adventofcode.com/2022/day/10
+https://github.com/AJPfleger
 """
 
-def parseLine(Line):
-    
-    if Line[0:4] == "noop": # noop => addx 0
-        return {"cmd":"noop"}
-    else:
-        return {"cmd":"addx","x":int(Line[5:-1])}
+from pathlib import Path
 
-def createRegister(Lines):
+
+def get_commands(filename):
+    path = Path(__file__).with_name(filename)
+    file = path.open("r")
+    lines = file.readlines()
+
+    commands = []
+    for l in lines:
+        if l[0:4] == "noop":
+            cmd = {"cmd": "noop"}
+        else:
+            cmd = {"cmd": "addx", "x": int(l[5:-1])}
+
+        commands.append(cmd)
+
+    return commands
+
+
+def create_register(commands):
     register = [1]
-    
-    for l in range(len(Lines)):
-        cmd = parseLine(Lines[l])
+    for cmd in commands:
         register.append(register[-1])
-        
-        if cmd['cmd'] == "addx":
-            register.append(register[-1]+cmd['x'])
-    
+
+        if cmd["cmd"] == "addx":
+            register.append(register[-1] + cmd["x"])
+
     return register
 
-def investigateCycles(register, cycles):
-    sumSigCyc = 0
 
+def investigate_cycles(register, cycles):
+    sum_sig_cyc = 0
     for c in cycles:
-        sumSigCyc += c*register[c-1]
-    
-    print(f'The sum of the signal strengths is {sumSigCyc}.')
-    
-    return
+        sum_sig_cyc += c * register[c - 1]
 
-def display(register, hRes = 40, vRes = 6):
+    return sum_sig_cyc
 
-    res = hRes * vRes
-    disp = [ "." for _ in range(res) ]
 
-    for p in range(res):
-        if abs(register[p]-(p%hRes)) <= 1:
+def display(register, h_res=40, v_res=6):
+    full_res = h_res * v_res
+    disp = ["." for _ in range(full_res)]
+
+    for p in range(full_res):
+        if abs(register[p] - (p % h_res)) <= 1:
             disp[p] = "#"
 
-    for i in range(vRes):
-        print("".join(disp[hRes*i:hRes*(i+1)]))
-    
+    for i in range(v_res):
+        print("".join(disp[h_res * i: h_res * (i + 1)]))
+
+    print("\n")
+
     return
 
 
-file = open('input.txt', 'r')
-Lines = file.readlines()
+print("\n--- Day 10: Cathode-Ray Tube ---")
 
-print('\n*** Part 1 ***\n')
-register = createRegister(Lines)
-cycles = [20, 60, 100, 140, 180, 220]
-investigateCycles(register, cycles)
+filename = "input.txt"
+commands = get_commands(filename)
+register = create_register(commands)
 
-print('\n*** Part 2 ***\n')
+print("\n--- Part 1 ---")
+cycles = [i for i in range(20, 221, 40)]
+sum_sig_cyc = investigate_cycles(register, cycles)
+print(f"The sum of the signal strengths is {sum_sig_cyc}.")
+
+print("\n--- Part 2 ---")
 display(register)
