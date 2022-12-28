@@ -1,162 +1,155 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
+""""
+--- Day 11: Monkey in the Middle ---
+https://adventofcode.com/2022/day/11
+
 Created on Sun Dec 11 08:05:00 2022
 
 @author: AJPfleger
-
-https://adventofcode.com/2022/day/11
-
-Manually translated the input-file into functions.
-Maybe I add a proper readout in the future.
+https://github.com/AJPfleger
 """
 
-def inspect(item, monkey):
-    if monkey == 0:
-        item *= 5
-    elif monkey == 1:
-        item *= item
-    elif monkey == 2:
-        item *= 7
-    elif monkey == 3:
-        item += 1
-    elif monkey == 4:
-        item += 3
-    elif monkey == 5:
-        item += 5
-    elif monkey == 6:
-        item += 8
-    elif monkey == 7:
-        item += 2
-    else:
-        print(f'ERROR - inspect({item},{monkey}) - monkey not found')
-        
-    return item
+from pathlib import Path
 
-def bored(item):
-    return int(item/3)
 
-def throwTo(item, monkey):
-    if monkey == 0:
-        aim = 3 if (item%11  == 0) else 4
-    elif monkey == 1:
-        aim = 6 if (item%2  == 0) else 7
-    elif monkey == 2:
-        aim = 1 if (item%5  == 0) else 5
-    elif monkey == 3:
-        aim = 2 if (item%17  == 0) else 5
-    elif monkey == 4:
-        aim = 2 if (item%19  == 0) else 3
-    elif monkey == 5:
-        aim = 1 if (item%7  == 0) else 6
-    elif monkey == 6:
-        aim = 0 if (item%3  == 0) else 7
-    elif monkey == 7:
-        aim = 4 if (item%13  == 0) else 0
-    else:
-        print(f'ERROR - throwTo({item},{monkey}) - monkey not found')
-        
-    return aim
-
-class monkeyClass:
-    
-    def __init__(self, startItem = 0, div = [i for i in range(1,20)]):
-        self.startItem = startItem
-        self.div = div
+class Monkey:
+    def __init__(self, start_item, monkey_properties):
+        self.start_item = start_item
+        self.div = []
         self.mods = []
-        for d in range(len(div)):
-            self.mods.append(startItem%div[d])
-    
-    def updateMods(self):
+        for mp in monkey_properties:
+            self.div.append(mp[2])
+            self.mods.append(start_item % mp[2])
+
+    def update_modulos(self):
         for d in range(len(self.div)):
-            self.mods[d] = (self.mods[d]%self.div[d])
-    
-    def __mod__(self,integer):
-        return self.mods[integer-1]
-    
-    def __add__(self,integer):
+            self.mods[d] = self.mods[d] % self.div[d]
+
+    def __mod__(self, integer):
+        return self.mods[self.div.index(integer)]
+
+    def __add__(self, integer):
         for d in range(len(self.div)):
             self.mods[d] += integer
-        self.updateMods()
+        self.update_modulos()
         return self
-    
-    def __mul__(self,integer):
+
+    def __mul__(self, integer):
         if isinstance(integer, self.__class__):
             for d in range(len(self.div)):
                 self.mods[d] *= self.mods[d]
         else:
             for d in range(len(self.div)):
                 self.mods[d] *= integer
-        self.updateMods()
+        self.update_modulos()
         return self
+
+
+def get_input(filename):
+    path = Path(__file__).with_name(filename)
+    file = path.open("r")
+    lines = file.readlines()
+
+    monkeys_start = []
+    properties = []
+    for m in range(0, len(lines), 7):
+        starting_items, prop = parse_monkey(lines[m:m + 6])
+        monkeys_start.append(starting_items)
+        properties.append(prop)
+
+    return monkeys_start, properties
+
+
+def parse_monkey(lines6):
+    offset = len("Starting items: ")
+    starting_items = lines6[1].strip()[offset:].split(", ")
+    for i in range(len(starting_items)):
+        starting_items[i] = int(starting_items[i])
+
+    offset = len("Operation: new = old ")
+    op_mode = lines6[2].strip()[offset]
+    op_value = lines6[2].strip()[offset + 2:]  # "old" or integer
+
+    offset = len("Test: divisible by ")
+    test_value = int(lines6[3].strip()[offset:])
+
+    offset = len("If true: throw to monkey ")
+    true_target = int(lines6[4].strip()[offset:])
+
+    offset = len("If false: throw to monkey ")
+    false_target = int(lines6[5].strip()[offset:])
+
+    return starting_items, [op_mode, op_value, test_value, true_target, false_target]
+
+
+def run_round(monkeys_start, monkey_properties, rounds=20, get_bored=True):
+    if get_bored:
+        monkeys = monkeys_start
+    else:
+        monkeys = [[] for _ in range(len(monkeys_start))]
+
+        for m in range(len(monkeys_start)):
+            for i in range(len(monkeys_start[m])):
+                monkeys[m].append(Monkey(monkeys_start[m][i], monkey_properties))
+
+    inspections = [0 for _ in range(len(monkeys_start))]
+
+    for _ in range(rounds):
+        for m in range(len(monkeys_start)):
+            for _ in range(len(monkeys[m])):
+                inspections[m] += 1
+                item = monkeys[m].pop()
+                item = inspect(item, m, monkey_properties)
+                if get_bored:
+                    item = item // 3
+                aim = get_aim(item, m, monkey_properties)
+                monkeys[aim].append(item)
+
+    return inspections
+
+
+def inspect(item, monkey, monkey_properties):
+    op_mode, op_value_str, _, _, _ = monkey_properties[monkey]
+
+    op_value = int(op_value_str) if op_value_str.isnumeric() else item
+    if op_mode == "+":
+        item += op_value
+    elif op_mode == "*":
+        item *= op_value
+    else:
+        print(f"ERROR inspect(): unknown op_mode [{op_mode}]")
+
+    return item
+
+
+def get_aim(item, monkey, monkey_properties):
+    _, _, test_value, true_target, false_target = monkey_properties[monkey]
+    aim = true_target if (item % test_value == 0) else false_target
+
+    return aim
+
 
 def level(inspections):
     inspections.sort(reverse=True)
-    print(f'Level of the monkey business = {inspections[0]*inspections[1]}')
-    return
+    level_of_monkey_business = inspections[0] * inspections[1]
+    print(f"Level of the monkey business = {level_of_monkey_business}")
+
+    return level_of_monkey_business
 
 
-monkeysStart = [
-    [92, 73, 86, 83, 65, 51, 55, 93],
-    [99, 67, 62, 61, 59, 98],
-    [81, 89, 56, 61, 99],
-    [97, 74, 68],
-    [78, 73],
-    [50],
-    [95, 88, 53, 75],
-    [50, 77, 98, 85, 94, 56, 89]
-    ]
+print("\n--- Day 11: Monkey in the Middle ---")
 
+filename = "input.txt"
 
-print('\n*** Part 1 ***\n')
-
-monkeys = monkeysStart.copy()
-
-inspections = [ 0 for _ in range(len(monkeysStart))]
-
-for r in range(20):
-    for m in range(len(monkeysStart)):
-        for i in range(len(monkeys[m])):
-            inspections[m] += 1
-            item = monkeys[m].pop()
-            item = inspect(item,m)
-            item = bored(item)
-            aim = throwTo(item, m)
-            monkeys[aim].append(item)
-            
+print("\n--- Part 1 ---")
+monkeys_start, monkey_properties = get_input(filename)
+inspections = run_round(monkeys_start, monkey_properties, 20, True)
 level(inspections)
 
-
-print('\n*** Part 2 ***\n')
-
-monkeysStart = [
-    [92, 73, 86, 83, 65, 51, 55, 93],
-    [99, 67, 62, 61, 59, 98],
-    [81, 89, 56, 61, 99],
-    [97, 74, 68],
-    [78, 73],
-    [50],
-    [95, 88, 53, 75],
-    [50, 77, 98, 85, 94, 56, 89]
-    ]
-
-monkeys = [ [] for _ in range(len(monkeysStart))]
-
-for m in range(len(monkeysStart)):
-    for i in range(len(monkeysStart[m])):
-        monkeys[m].append(monkeyClass(monkeysStart[m][i]))
-
-inspections = [ 0 for _ in range(len(monkeysStart))]
-
-for r in range(10000):
-    
-    for m in range(len(monkeysStart)):
-        for i in range(len(monkeys[m])):
-            inspections[m] += 1
-            item = monkeys[m].pop()
-            item = inspect(item,m)
-            #item = bored(item)
-            aim = throwTo(item, m)
-            monkeys[aim].append(item)
-            
+print("\n--- Part 2 ---")
+monkeys_start, monkey_properties = get_input(filename)
+inspections = run_round(monkeys_start, monkey_properties, 10000, False)
 level(inspections)
+
+print("")  # new line at end of output
