@@ -1,4 +1,4 @@
-// --- Day 2: Cube Conundrum ---
+// --- Day 5: Hydrothermal Venture ---
 // https://adventofcode.com/2021/day/5
 //
 // https://github.com/AJPfleger
@@ -74,8 +74,9 @@ void fileToPositions(std::vector<std::string>& positions,
 }
 
 int main(int argc, char* argv[]) {
+    std::cout << "--- Day 5: Hydrothermal Venture ---" << std::endl;
+
     const std::string filename = argc > 1 ? argv[1] : "input.txt";
-    std::cout << "filename = " << filename << std::endl;
 
     auto detectOverlap = [](auto m) { return m.second > 1; };
 
