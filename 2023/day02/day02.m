@@ -5,7 +5,7 @@
 %
 % https://github.com/AJPfleger
 %
-% call like `octave day02.m input.txt`
+% call like 'octave day02.m input.txt'
 
 disp('--- Day 2: Cube Conundrum ---')
 

@@ -5,7 +5,7 @@
 %
 % https://github.com/AJPfleger
 %
-% call like `octave day01.m input.txt true`
+% call like 'octave day01.m input.txt true'
 
 disp('--- Day 1: Trebuchet?! ---')
 
