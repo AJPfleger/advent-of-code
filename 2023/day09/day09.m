@@ -19,8 +19,8 @@ rawInput = dlmread(filename);
 finalValues = zeros(size(rawInput(:,1:2)));
 for l = 1:size(rawInput,1)
 
-    line = [rawInput(l,:); fliplr(rawInput(l,:))]
-    lineEnds = line(:,end)
+    line = [rawInput(l,:); fliplr(rawInput(l,:))];
+    lineEnds = line(:,end);
 
     while sum(line(:) != 0) ~=0
         line = diff(line,1,2);
