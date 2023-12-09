@@ -40,6 +40,9 @@ lSchematicDigits = schematic >= zeroASCII & (schematic <= zeroASCII + 9);
 lSchematicSymbols = ~lSchematicEmpty & ~lSchematicDigits;
 lSchematicPossibleGear = schematic == gearASCII;
 
+
+%% Part 1 --------------------------------------------------------
+
 %generate adjecent symbols
 adjecentToSymbols = false(size(schematic));
 for rShift = -1:1
@@ -47,7 +50,6 @@ for rShift = -1:1
         adjecentToSymbols((2:end-1)+rShift, (2:end-1)+cShift) = adjecentToSymbols((2:end-1)+rShift, (2:end-1)+cShift) | lSchematicSymbols(2:end-1,2:end-1);
     end
 end
-
 
 partNumbers = [];
 for r = 2:nRows+1
@@ -66,8 +68,11 @@ for r = 2:nRows+1
         end
     end
 end
+
 resultPart1 = sum(partNumbers(:))
 
+
+%% Part 2 --------------------------------------------------------
 
 gearTable = [];
 for r = 2:nRows+1
@@ -116,4 +121,5 @@ for gt = 1:size(gearTable,1)
 
     gearRatios(end+1) = prod(gearTable(:,2)(lCurrentGearAll));
 end
+
 resultPart2 = sum(gearRatios(:))

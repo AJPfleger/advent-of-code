@@ -20,6 +20,7 @@ fclose(fid);
 
 rawInput = rawInput{1};
 
+
 %% Part 1 --------------------------------------------------------
 
 JisForJoker = false;

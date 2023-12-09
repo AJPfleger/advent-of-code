@@ -24,7 +24,7 @@ timeStr = rawInput{1}(6:end);
 distStr = rawInput{2}(10:end);
 
 
-%% Part 1
+%% Part 1 --------------------------------------------------------
 
 times = str2num(timeStr);
 dists = str2num(distStr);
@@ -40,7 +40,7 @@ end
 resultPart1 = prod(win)
 
 
-%% Part 2
+%% Part 2 --------------------------------------------------------
 
 times = str2num(timeStr(~isspace(timeStr)));
 dists = str2num(distStr(~isspace(distStr)));

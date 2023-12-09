@@ -36,7 +36,7 @@ for c = 3:numel(rawInput)
 end
 
 
-%% Part 1
+%% Part 1 --------------------------------------------------------
 
 location = seedList;
 for s = 1:numel(seedList)
@@ -56,10 +56,10 @@ for s = 1:numel(seedList)
     end
 end
 
-
 resultPart1 = min(location)
 
-%% Part 2
+
+%% Part 2 --------------------------------------------------------
 
 seedRanges = reshape(seedList,[2,numel(seedList)/2]).';
 seedRangesExpl = [seedRanges(:,1), seedRanges(:,1)+seedRanges(:,2) - 1];

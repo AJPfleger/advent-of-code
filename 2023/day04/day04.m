@@ -17,12 +17,18 @@ delimiter = find(rawInput(1,:) == 0);
 winningNumbers = rawInput(:,3:delimiter(2)-1);
 myNumbers = rawInput(:,delimiter(2)+1:end);
 
+
+%% Part 1 --------------------------------------------------------
+
 countWinning = zeros(size(myNumbers(:,1)));
 for mn = 1:size(myNumbers,2)
     countWinning = countWinning + sum(winningNumbers == myNumbers(:,mn),2);
 end
 
 resultPart1 = sum(2.^(countWinning(countWinning > 0)-1))
+
+
+%% Part 2 --------------------------------------------------------
 
 nCopies = ones(size(countWinning));
 for cw = 1:numel(countWinning)-1
