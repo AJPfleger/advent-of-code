@@ -1,36 +1,40 @@
-function printpipemap(Map)
+function mapChar = printpipemap(Map)
+% PRINTPIPTEMAP
+%
+%   mapChar = PRINTPIPTEMAP(Map) returns a char with the map
 
     Map(isnan(Map)) = double('n');
     Map(isinf(Map)) = double('1');
 
+    mapChar = newline;
     for r = 1:size(Map,1)
-        str = '';
         for c = 1:size(Map,2)
             switch Map(r,c)
                 case double('F')
-                    str = strcat(str,'┏');
+                    mapChar = strcat(mapChar,'┏');
                 case double('7')
-                    str = strcat(str,'┓');
+                    mapChar = strcat(mapChar,'┓');
                 case double('L')
-                    str = strcat(str,'┗');
+                    mapChar = strcat(mapChar,'┗');
                 case double('J')
-                    str = strcat(str,'┛');
+                    mapChar = strcat(mapChar,'┛');
                 case double('-')
-                    str = strcat(str,'━');
+                    mapChar = strcat(mapChar,'━');
                 case double('|')
-                    str = strcat(str,'┃');
+                    mapChar = strcat(mapChar,'┃');
                 case 0
-                    str = strcat(str,'░');
+                    mapChar = strcat(mapChar,'░');
                 case double('n')
-                    str = strcat(str,'N');
+                    mapChar = strcat(mapChar,'N');
                 case double('1');
-                    str = strcat(str,'█');
+                    mapChar = strcat(mapChar,'█');
                 case double('S');
-                    str = strcat(str,'S');
+                    mapChar = strcat(mapChar,'S');
                 otherwise
                     "ERROR wrong character"
             end
         end
-        str
+        mapChar = strcat(mapChar,newline);
     end
+    mapChar = strcat(mapChar,newline);
 end
