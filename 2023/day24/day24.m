@@ -67,4 +67,9 @@ resultPart1 = intersects
 
 %% Part 2 --------------------------------------------------------
 
-% WIP
+pxyz = int64(rawInput(1:3,1:3));
+vxyz = int64(rawInput(1:3,4:6));
+
+[P,V] = mexZ3solver(pxyz,vxyz);
+
+resultPart2 = sum(P)
