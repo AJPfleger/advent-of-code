@@ -155,27 +155,27 @@ end
 % correct path we try 10 * n! random paths and choose the
 % longest. The result is NOT guarnteed to be correct, but
 % very likely.
-%n = round(sqrt(size(nodes,1)));
-%p0 = edges(1,2);
-%p1 = edges(end,1);
-%paths = [];
-%for randpath = 1:10*factorial(n)
-%    pa = 0;
-%    next = p0;
-%    while next ~= p1
-%        choices = edges(edges(:,1) == next,:);
-%
-%        r = randi(size(choices,1));
-%
-%        next = choices(r,2);
-%        pa = pa + choices(r,3);
-%    end
-%    paths(end+1) = pa;
-%end
-%
-%paths = paths + edges(1,3) + edges(end,3) + 2;
-%
-%resultPart1 = max(paths)
+n = round(sqrt(size(nodes,1)));
+p0 = edges(1,2);
+p1 = edges(end,1);
+paths = [];
+for randpath = 1:10*factorial(n)
+    pa = 0;
+    next = p0;
+    while next ~= p1
+        choices = edges(edges(:,1) == next,:);
+
+        r = randi(size(choices,1));
+
+        next = choices(r,2);
+        pa = pa + choices(r,3);
+    end
+    paths(end+1) = pa;
+end
+
+paths = paths + edges(1,3) + edges(end,3) + 2;
+
+resultPart1 = max(paths)
 
 
 %% Part 2 --------------------------------------------------------
