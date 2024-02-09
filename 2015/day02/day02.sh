@@ -10,7 +10,8 @@ echo "--- Day 2: I Was Told There Would Be No Math ---"
 filename=input.txt
 
 # lxwxh
-# area = 2*l*w + 2*w*h + 2*h*l
+# area = 2*l*w + 2*w*h + 2*h*l + smallface
+# length = 2 * (l+w+h - longside)
 
 area=0
 length=0
@@ -44,7 +45,6 @@ while read line; do
     longside=$h
   fi
 
-  # length = 2 * (l+w+h - longside)
   area=$((area+2*(lw+wh+hl)+smallface))
   length=$((length+2*(l+w+h-longside)+l*w*h))
 done < $filename
