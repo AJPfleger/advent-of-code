@@ -67,7 +67,7 @@ def check_rearranged(disk, space_full):
 
 print("\n--- Day 9: Disk Fragmenter ---")
 
-filename = "input.txt"
+filename = "testinput.txt"
 
 print("\n--- Part 1 ---")
 string = parse_input(filename)
@@ -82,6 +82,6 @@ check_sum = check_rearranged(disk, space_full)
 print(check_sum)
 
 
-# print("\n--- Part 2 ---")
-#
-# print(count_all_sub_blocks(block))
+print("\n--- Part 2 ---")
+check_sum_defrag = check_defragment(disk, space_full)
+print(check_sum_defrag)
