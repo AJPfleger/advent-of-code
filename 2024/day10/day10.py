@@ -84,7 +84,6 @@ def count_peaks(my_map):
     n_cols = len(my_map[0])
 
     peak_count = 0
-    print_map(my_map)
     for c in range(1, n_cols - 1):
         for r in range(1, n_rows - 1):
             val = my_map[r][c]
@@ -98,9 +97,6 @@ def count_peaks(my_map):
 
             for _ in range(100):
                 tmp_map = clean_neighbours(tmp_map)
-
-            # print_map(tmp_map)
-            # print_map(my_map)
 
             peak_count += count_occurance(tmp_map, 9)
     return peak_count
@@ -123,19 +119,47 @@ def overwrite_zeros(my_map):
     return my_map
 
 
+def count_paths(my_map, r, c):
+    val = my_map[r][c]
+
+    if val == 9:
+        return 1
+
+    directions = [[r + 1, c], [r - 1, c], [r, c + 1], [r, c - 1]]
+
+    n_paths = 0
+    for r_new, c_new in directions:
+        val_new = my_map[r_new][c_new]
+        if val_new == val + 1:
+            n_paths += count_paths(my_map, r_new, c_new)
+
+    return n_paths
+
+
 print("\n--- Day 10: Hoof It ---")
 
-filename = "testinput.txt"
+filename = "input.txt"
+
+raw_map = parse_input(filename)
+updated_map = expand_map(raw_map)
+updated_map = clean_neighbours(updated_map)
+
+# print_map(updated_map)
 
 print("\n--- Part 1 ---")
-raw_map = parse_input(filename)
-print_map(raw_map)
-updated_map = expand_map(raw_map)
-
-# pre-clean
-for _ in range(100):
-    updated_map = clean_neighbours(updated_map)
-    # print_map(updated_map)
-
 sum_peaks = count_peaks(updated_map)
 print(sum_peaks)
+
+print("\n--- Part 2 ---")
+n_rows = len(updated_map)
+n_cols = len(updated_map[0])
+
+n_paths = 0
+for c in range(1, n_cols - 1):
+    for r in range(1, n_rows - 1):
+        val = updated_map[r][c]
+
+        if val == 0:
+            n_paths += count_paths(updated_map, r, c)
+
+print(n_paths)
